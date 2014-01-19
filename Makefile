@@ -1,9 +1,9 @@
 # Sources
 
-SRCS = main.c stm32f4xx_it.c system_stm32f4xx.c syscalls.c
+SRCS = main.c stm32f4xx_it.c system_stm32f4xx.c
 
 # USB
-SRCS += usbd_usr.c usbd_cdc_vcp.c usbd_desc.c usb_bsp.c
+# SRCS += usbd_usr.c usbd_cdc_vcp.c usbd_desc.c usb_bsp.c
 
 # Project name
 
@@ -18,8 +18,8 @@ OUTPATH=build
 # binary compatible
 ifneq ($(FLOAT_TYPE), hard)
 ifneq ($(FLOAT_TYPE), soft)
-override FLOAT_TYPE = hard
-#override FLOAT_TYPE = soft
+#override FLOAT_TYPE = hard
+override FLOAT_TYPE = soft
 endif
 endif
 
@@ -53,16 +53,17 @@ CFLAGS += -Ilib/Conf
 
 # Library paths
 LIBPATHS = -Llib/StdPeriph -Llib/USB_Device/Core
-LIBPATHS += -Llib/USB_Device/Class/cdc -Llib/USB_OTG
+#LIBPATHS += -Llib/USB_Device/Class/cdc -Llib/USB_OTG
 
 # Libraries to link
-LIBS = -lm -lstdperiph -lusbdevcore -lusbdevcdc -lusbcore
+LIBS = -lm -lstdperiph 
+#LIBS += -lusbdevcore -lusbdevcdc -lusbcore
 
 # Extra includes
 CFLAGS += -Ilib/StdPeriph/inc
-CFLAGS += -Ilib/USB_OTG/inc
-CFLAGS += -Ilib/USB_Device/Core/inc
-CFLAGS += -Ilib/USB_Device/Class/cdc/inc
+#CFLAGS += -Ilib/USB_OTG/inc
+#CFLAGS += -Ilib/USB_Device/Core/inc
+#CFLAGS += -Ilib/USB_Device/Class/cdc/inc
 
 # add startup file to build
 SRCS += lib/startup_stm32f4xx.s
