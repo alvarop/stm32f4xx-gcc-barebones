@@ -1,13 +1,12 @@
 #include "stm32f4xx_it.h"
 #include "stm32f4xx_conf.h"
-#include "main.h"
 
 /**
   * @brief   This function handles NMI exception.
   * @param  None
   * @retval None
   */
-void NMI_Handler(void)
+__attribute__((weak)) void NMI_Handler(void)
 {
 }
 
@@ -16,7 +15,7 @@ void NMI_Handler(void)
   * @param  None
   * @retval None
   */
-void HardFault_Handler(void)
+__attribute__((weak)) void HardFault_Handler(void)
 {
   /* Go to infinite loop when Hard Fault exception occurs */
   while (1)
@@ -29,7 +28,7 @@ void HardFault_Handler(void)
   * @param  None
   * @retval None
   */
-void MemManage_Handler(void)
+__attribute__((weak)) void MemManage_Handler(void)
 {
   /* Go to infinite loop when Memory Manage exception occurs */
   while (1)
@@ -42,7 +41,7 @@ void MemManage_Handler(void)
   * @param  None
   * @retval None
   */
-void BusFault_Handler(void)
+__attribute__((weak)) void BusFault_Handler(void)
 {
   /* Go to infinite loop when Bus Fault exception occurs */
   while (1)
@@ -55,7 +54,7 @@ void BusFault_Handler(void)
   * @param  None
   * @retval None
   */
-void UsageFault_Handler(void)
+__attribute__((weak)) void UsageFault_Handler(void)
 {
   /* Go to infinite loop when Usage Fault exception occurs */
   while (1)
@@ -68,7 +67,7 @@ void UsageFault_Handler(void)
   * @param  None
   * @retval None
   */
-void SVC_Handler(void)
+__attribute__((weak)) void SVC_Handler(void)
 {
 }
 
@@ -77,7 +76,7 @@ void SVC_Handler(void)
   * @param  None
   * @retval None
   */
-void DebugMon_Handler(void)
+__attribute__((weak)) void DebugMon_Handler(void)
 {
 }
 
@@ -86,7 +85,7 @@ void DebugMon_Handler(void)
   * @param  None
   * @retval None
   */
-void PendSV_Handler(void)
+__attribute__((weak)) void PendSV_Handler(void)
 {
 }
 
@@ -95,7 +94,7 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
-void SysTick_Handler(void)
+__attribute__((weak)) void SysTick_Handler(void)
 {
-	timing_handler();
+
 }

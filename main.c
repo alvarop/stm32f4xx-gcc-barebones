@@ -3,7 +3,6 @@
 
 #include "stm32f4xx_conf.h"
 #include "stm32f4xx.h"
-#include "main.h"
 
 volatile uint32_t time_var1, time_var2;
 // Private function prototypes
@@ -21,7 +20,11 @@ int main(void) {
 		GPIO_SetBits(GPIOD, GPIO_Pin_12);
 		Delay(100);
 		GPIO_ResetBits(GPIOD, GPIO_Pin_12);
-		Delay(700);
+		Delay(100);
+		GPIO_SetBits(GPIOD, GPIO_Pin_12);
+		Delay(100);
+		GPIO_ResetBits(GPIOD, GPIO_Pin_12);
+		Delay(500);
 	}
 
 	return 0;
@@ -49,10 +52,8 @@ void init() {
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 }
 
-/*
- * Called from systick handler
- */
-void timing_handler() {
+void SysTick_Handler(void)
+{
 	if (time_var1) {
 		time_var1--;
 	}

@@ -73,18 +73,20 @@ SECTIONS
   } >FLASH
 
   /* used by the startup to initialize data */
-  _sidata = .;
+  __sidata = .;
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
-  .data : AT ( _sidata )
+  .data : AT ( __sidata )
   {
     . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */
+    __data_start__ = _sdata;
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
 
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
+    __data_end__ = _edata;
   } >RAM
 
   /* Uninitialized data section */
