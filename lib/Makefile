@@ -3,13 +3,13 @@
 # Check for valid float argument
 ifneq ($(FLOAT_TYPE), hard)
 ifneq ($(FLOAT_TYPE), soft)
-override FLOAT_TYPE = hard
-#override FLOAT_TYPE = soft
+#override FLOAT_TYPE = hard
+override FLOAT_TYPE = soft
 endif
 endif
 
 all:
-	$(MAKE) -C StdPeriph FLOAT_TYPE=$(FLOAT_TYPE)
+	$(MAKE) -C STM32F4xx_StdPeriph_Driver FLOAT_TYPE=$(FLOAT_TYPE)
 #	$(MAKE) -C USB_OTG FLOAT_TYPE=$(FLOAT_TYPE)
 #	$(MAKE) -C USB_Device/Core FLOAT_TYPE=$(FLOAT_TYPE)
 #	$(MAKE) -C USB_Device/Class/cdc FLOAT_TYPE=$(FLOAT_TYPE)
@@ -18,7 +18,7 @@ all:
 #	$(MAKE) -C fat_fs FLOAT_TYPE=$(FLOAT_TYPE)
 
 clean:
-	$(MAKE) clean -C StdPeriph
+	$(MAKE) clean -C STM32F4xx_StdPeriph_Driver
 #	$(MAKE) clean -C USB_OTG
 #	$(MAKE) clean -C USB_Device/Core
 #	$(MAKE) clean -C USB_Device/Class/cdc

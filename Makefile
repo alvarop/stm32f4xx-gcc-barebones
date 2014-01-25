@@ -48,6 +48,13 @@ else
 CFLAGS += -msoft-float
 endif
 
+# Default to STM32F40_41xxx if no device is passed
+ifeq ($(DEVICE_DEF), )
+CFLAGS += -DSTM32F40_41xxx
+else
+CFLAGS += -D$(DEVICE_DEF)
+endif
+
 ###################################################
 
 #vpath %.c src
@@ -55,19 +62,19 @@ vpath %.a lib
 
 
 # Includes
-INCLUDE_PATHS = -Iinc -Ilib/Core/cmsis -Ilib/Core/stm32
+INCLUDE_PATHS = -Iinc -Ilib/cmsis/stm32f4xx -Ilib/cmsis/include -lib/STM32F4xx_StdPeriph_Driver/inc
 INCLUDE_PATHS += -Ilib/Conf
 
 # Library paths
-LIBPATHS = -Llib/StdPeriph -Llib/USB_Device/Core
-#LIBPATHS += -Llib/USB_Device/Class/cdc -Llib/USB_OTG
+LIBPATHS = -Llib/STM32F4xx_StdPeriph_Driver
+#LIBPATHS += -Llib/USB_Device/Core -Llib/USB_Device/Class/cdc -Llib/USB_OTG
 
 # Libraries to link
 LIBS = -lstdperiph 
 #LIBS += -lusbdevcore -lusbdevcdc -lusbcore
 
 # Extra includes
-INCLUDE_PATHS += -Ilib/StdPeriph/inc
+INCLUDE_PATHS += -Ilib/STM32F4xx_StdPeriph_Driver/inc
 #INCLUDE_PATHS += -Ilib/USB_OTG/inc
 #INCLUDE_PATHS += -Ilib/USB_Device/Core/inc
 #INCLUDE_PATHS += -Ilib/USB_Device/Class/cdc/inc
@@ -102,7 +109,7 @@ $(OUTPATH)$(PROJ_NAME).elf: $(OBJS)
 	$(OBJDUMP) -S --disassemble $(OUTPATH)$(PROJ_NAME).elf > $(OUTPATH)$(PROJ_NAME).dis
 
 clean:
-	rm -f *.o
+	rm -f $(OUTPATH)*.o
 	rm -f $(OUTPATH)$(PROJ_NAME).elf
 	rm -f $(OUTPATH)$(PROJ_NAME).hex
 	rm -f $(OUTPATH)$(PROJ_NAME).bin

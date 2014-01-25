@@ -134,7 +134,7 @@ extern unsigned long __data_end__;		/* end address for the .data section. define
 extern unsigned long __bss_start__;		/* start address for the .bss section. defined in linker script */
 extern unsigned long __bss_end__;		/* end address for the .bss section. defined in linker script */
 
-extern void _estack;					/* init value for the stack pointer. defined in linker script */
+extern unsigned long *_estack;				/* init value for the stack pointer. defined in linker script */
 
 extern void SystemInit(void);
 
@@ -155,7 +155,7 @@ extern void _CPUregTestPOST (void);
 __attribute__ ((section(".isr_vector")))
 void (* const g_pfnVectors[])(void) =
 {
-		&_estack,							/* The initial stack pointer */
+		(void *)&_estack,			 		/* The initial stack pointer */
 		Reset_Handler,						/* Reset Handler */
 		NMI_Handler,						/* NMI Handler */
 		HardFault_Handler,					/* Hard Fault Handler */
