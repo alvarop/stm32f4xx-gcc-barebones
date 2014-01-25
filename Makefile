@@ -9,7 +9,7 @@ S_SRCS =
 # Project name
 
 PROJ_NAME=stm32f4-gcc-barebones
-OUTPATH=build/
+OUTPATH=build
 
 ###################################################
 
@@ -39,7 +39,7 @@ LINKER_SCRIPT = stm32_flash.ld
 CPU = -mcpu=cortex-m4 -mthumb
 
 CFLAGS  = $(CPU) -c -std=gnu99 -g -O2 -Wall
-LDLAGS  = $(CPU) -mlittle-endian -mthumb-interwork -nostartfiles -Wl,--gc-sections,-Map=$(OUTPATH)$(PROJ_NAME).map,--cref --specs=nano.specs
+LDLAGS  = $(CPU) -mlittle-endian -mthumb-interwork -nostartfiles -Wl,--gc-sections,-Map=$(OUTPATH)/$(PROJ_NAME).map,--cref --specs=nano.specs
 
 ifeq ($(FLOAT_TYPE), hard)
 CFLAGS += -fsingle-precision-constant -Wdouble-promotion
@@ -79,7 +79,7 @@ INCLUDE_PATHS += -Ilib/STM32F4xx_StdPeriph_Driver/inc
 #INCLUDE_PATHS += -Ilib/USB_Device/Core/inc
 #INCLUDE_PATHS += -Ilib/USB_Device/Class/cdc/inc
 
-#CFLAGS += -Map $(OUTPATH)$(PROJ_NAME).map
+#CFLAGS += -Map $(OUTPATH)/$(PROJ_NAME).map
 
 OBJS = $(SRCS:.c=.o)
 OBJS += $(S_SRCS:.s=.o)
@@ -89,31 +89,31 @@ OBJS += $(S_SRCS:.s=.o)
 .PHONY: lib proj
 
 all: lib proj
-	$(SIZE) $(OUTPATH)$(PROJ_NAME).elf
+	$(SIZE) $(OUTPATH)/$(PROJ_NAME).elf
 
 lib:
 	$(MAKE) -C lib FLOAT_TYPE=$(FLOAT_TYPE)
 
-proj: $(OUTPATH)$(PROJ_NAME).elf
+proj: $(OUTPATH)/$(PROJ_NAME).elf
 
 .s.o:
-	$(AS) $(CPU) -o $(addprefix $(OUTPATH), $@) $<
+	$(AS) $(CPU) -o $(addprefix $(OUTPATH)/, $@) $<
 
 .c.o:
-	$(CC) $(CFLAGS) -std=gnu99 $(INCLUDE_PATHS) -o $(addprefix  $(OUTPATH), $@) $<
+	$(CC) $(CFLAGS) -std=gnu99 $(INCLUDE_PATHS) -o $(addprefix  $(OUTPATH)/, $@) $<
 
-$(OUTPATH)$(PROJ_NAME).elf: $(OBJS)
-	$(LD) $(LD_FLAGS) -T$(LINKER_SCRIPT) $(LIBPATHS) -o $@ $(addprefix $(OUTPATH), $^) $(LIBS) $(LD_SYS_LIBS)
-	$(OBJCOPY) -O ihex $(OUTPATH)$(PROJ_NAME).elf $(OUTPATH)$(PROJ_NAME).hex
-	$(OBJCOPY) -O binary $(OUTPATH)$(PROJ_NAME).elf $(OUTPATH)$(PROJ_NAME).bin
-	$(OBJDUMP) -S --disassemble $(OUTPATH)$(PROJ_NAME).elf > $(OUTPATH)$(PROJ_NAME).dis
+$(OUTPATH)/$(PROJ_NAME).elf: $(OBJS)
+	$(LD) $(LD_FLAGS) -T$(LINKER_SCRIPT) $(LIBPATHS) -o $@ $(addprefix $(OUTPATH)/, $^) $(LIBS) $(LD_SYS_LIBS)
+	$(OBJCOPY) -O ihex $(OUTPATH)/$(PROJ_NAME).elf $(OUTPATH)/$(PROJ_NAME).hex
+	$(OBJCOPY) -O binary $(OUTPATH)/$(PROJ_NAME).elf $(OUTPATH)/$(PROJ_NAME).bin
+	$(OBJDUMP) -S --disassemble $(OUTPATH)/$(PROJ_NAME).elf > $(OUTPATH)/$(PROJ_NAME).dis
 
 clean:
-	rm -f $(OUTPATH)*.o
-	rm -f $(OUTPATH)$(PROJ_NAME).elf
-	rm -f $(OUTPATH)$(PROJ_NAME).hex
-	rm -f $(OUTPATH)$(PROJ_NAME).bin
-	rm -f $(OUTPATH)$(PROJ_NAME).dis
-	rm -f $(OUTPATH)$(PROJ_NAME).map
+	rm -f $(OUTPATH)/*.o
+	rm -f $(OUTPATH)/$(PROJ_NAME).elf
+	rm -f $(OUTPATH)/$(PROJ_NAME).hex
+	rm -f $(OUTPATH)/$(PROJ_NAME).bin
+	rm -f $(OUTPATH)/$(PROJ_NAME).dis
+	rm -f $(OUTPATH)/$(PROJ_NAME).map
 	$(MAKE) clean -C lib # Remove this line if you don't want to clean the libs as well
 	
