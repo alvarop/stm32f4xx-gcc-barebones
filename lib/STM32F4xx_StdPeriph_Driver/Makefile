@@ -32,6 +32,7 @@ CFLAGS += -Iinc -I$(BASEDIR)/lib/cmsis/include -I$(BASEDIR)/lib/cmsis/stm32f4xx
 ifeq ($(DEVICE_DEF), )
 DEVICE_DEF = STM32F40_41xxx
 endif
+=======
 
 CFLAGS += -D$(DEVICE_DEF)
 
