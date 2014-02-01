@@ -42,6 +42,11 @@ fifo_t usbTxFifo;
 static uint8_t inBuff[FIFO_BUFF_SIZE];
 static uint8_t outBuff[FIFO_BUFF_SIZE];
 
+extern uint8_t cdcTxBuff[CDC_DATA_MAX_PACKET_SIZE];
+extern volatile uint32_t usbTxInProgress;
+
+extern USB_OTG_CORE_HANDLE  USB_OTG_dev;
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -53,15 +58,6 @@ LINE_CODING linecoding =
     0x00,   /* parity - none*/
     0x08    /* nb. of bits 8*/
   };
-
-/* These are external variables imported from CDC core to be used for IN 
-   transfer management. */
-extern uint8_t  APP_Rx_Buffer []; /* Write CDC received data in this buffer.
-                                     These data will be sent over USB IN endpoint
-                                     in the CDC core functions. */
-extern uint32_t APP_Rx_ptr_in;    /* Increment this pointer or roll it back to
-                                     start address when writing received data
-                                     in the buffer APP_Rx_Buffer. */
 
 /* Private function prototypes -----------------------------------------------*/
 static uint16_t VCP_Init     (void);
@@ -143,13 +139,7 @@ static uint16_t VCP_Ctrl (uint32_t Cmd, uint8_t* Buf, uint32_t Len)
     break;
 
   case GET_LINE_CODING:
-    Buf[0] = (uint8_t)(linecoding.bitrate);
-    Buf[1] = (uint8_t)(linecoding.bitrate >> 8);
-    Buf[2] = (uint8_t)(linecoding.bitrate >> 16);
-    Buf[3] = (uint8_t)(linecoding.bitrate >> 24);
-    Buf[4] = linecoding.format;
-    Buf[5] = linecoding.paritytype;
-    Buf[6] = linecoding.datatype; 
+    /* Not  needed for this driver */
     break;
 
   case SET_CONTROL_LINE_STATE:
@@ -203,6 +193,32 @@ static uint16_t VCP_DataTx (uint8_t* Buf, uint32_t Len)
   uint32_t i = 0;
   while (i < Len) {
     fifoPush(&usbTxFifo, *(Buf + i++));
+  }
+
+  if(!usbTxInProgress) {
+    uint32_t txLen = fifoSize(&usbTxFifo);
+    uint8_t *pBuf = cdcTxBuff;
+
+    if(txLen) {
+      
+      if(txLen > CDC_DATA_MAX_PACKET_SIZE) {
+        txLen = CDC_DATA_MAX_PACKET_SIZE;
+      }
+
+      usbTxInProgress = 1;
+
+      for(uint32_t x = 0; x < txLen; x++) {
+        *pBuf++ = fifoPop(&usbTxFifo);
+      }
+
+      /* Prepare the available data buffer to be sent on IN endpoint */
+      DCD_EP_Tx (&USB_OTG_dev,
+                 CDC_IN_EP,
+                 (uint8_t*)cdcTxBuff,
+                 txLen);
+    } else {
+      usbTxInProgress = 0;
+    } 
   }
   
   return USBD_OK;

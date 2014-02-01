@@ -9,7 +9,9 @@
 #include "usbd_desc.h"
 #include "usbd_cdc_vcp.h"
 
-volatile uint32_t time_var1, time_var2;
+#define BLINK_DELAY_MS	(1000)
+
+volatile uint32_t tickMs = 0;
 __ALIGN_BEGIN USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 // Private function prototypes
@@ -17,15 +19,26 @@ void Delay(volatile uint32_t nCount);
 void init();
 
 int main(void) {
+	uint32_t nextBlink;
+	uint32_t blinkState = 0;
 	init();
 
+	nextBlink = tickMs + BLINK_DELAY_MS;
 	for(;;) {
-		GPIO_SetBits(GPIOD, GPIO_Pin_12);
-		Delay(500);
-		GPIO_ResetBits(GPIOD, GPIO_Pin_12);
-		Delay(500);
 
-		printf("New Test!\n");
+		if(tickMs > nextBlink) {
+			nextBlink = tickMs + BLINK_DELAY_MS;
+			if(blinkState) {
+				GPIO_SetBits(GPIOD, GPIO_Pin_12);
+				puts("New Test!\n ");
+			} else {
+				GPIO_ResetBits(GPIOD, GPIO_Pin_12);
+			}
+			blinkState ^= 1;
+		}
+
+		//__WFI(); //disable to work with openocd...
+		
 	}
 
 	return 0;
@@ -61,19 +74,7 @@ void init() {
 
 void SysTick_Handler(void)
 {
-	if (time_var1) {
-		time_var1--;
-	}
-
-	time_var2++;
-}
-
-/*
- * Delay a number of systick cycles (1ms)
- */
-void Delay(volatile uint32_t nCount) {
-	time_var1 = nCount;
-	while(time_var1){};
+	tickMs++;
 }
 
 /*

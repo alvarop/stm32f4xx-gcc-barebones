@@ -72,8 +72,8 @@
 extern fifo_t usbRxFifo;
 extern fifo_t usbTxFifo;
 
-static uint8_t cdcTxBuff[CDC_DATA_MAX_PACKET_SIZE];
-static volatile uint32_t usbTxInProgress = 0;;
+uint8_t cdcTxBuff[CDC_DATA_MAX_PACKET_SIZE];
+volatile uint32_t usbTxInProgress = 0;
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
   * @{
@@ -122,7 +122,6 @@ static uint8_t  usbd_cdc_Setup       (void  *pdev, USB_SETUP_REQ *req);
 static uint8_t  usbd_cdc_EP0_RxReady  (void *pdev);
 static uint8_t  usbd_cdc_DataIn      (void *pdev, uint8_t epnum);
 static uint8_t  usbd_cdc_DataOut     (void *pdev, uint8_t epnum);
-static uint8_t  usbd_cdc_SOF         (void *pdev);
 
 /*********************************************
    CDC specific management functions
@@ -197,7 +196,7 @@ USBD_Class_cb_TypeDef  USBD_CDC_cb =
   usbd_cdc_EP0_RxReady,
   usbd_cdc_DataIn,
   usbd_cdc_DataOut,
-  usbd_cdc_SOF,
+  NULL,
   NULL,
   NULL,     
   USBD_cdc_GetCfgDesc,
@@ -613,30 +612,6 @@ static uint8_t  usbd_cdc_EP0_RxReady (void  *pdev)
   return USBD_OK;
 }
 
-void txCDCBytes(void *pdev) {
-  uint32_t txLen = fifoSize(&usbTxFifo);
-  uint8_t *pBuf = cdcTxBuff;
-
-  if(txLen) {
-    
-    if(txLen > CDC_DATA_MAX_PACKET_SIZE) {
-      txLen = CDC_DATA_MAX_PACKET_SIZE;
-    }
-
-    usbTxInProgress = 1;
-
-    for(uint32_t x = 0; x < txLen; x++) {
-      *pBuf++ = fifoPop(&usbTxFifo);
-    }
-
-    /* Prepare the available data buffer to be sent on IN endpoint */
-    DCD_EP_Tx (pdev,
-               CDC_IN_EP,
-               (uint8_t*)cdcTxBuff,
-               txLen);
-  }
-}
-
 /**
   * @brief  usbd_audio_DataIn
   *         Data sent on non-control IN endpoint
@@ -646,11 +621,33 @@ void txCDCBytes(void *pdev) {
   */
 static uint8_t  usbd_cdc_DataIn (void *pdev, uint8_t epnum)
 {
-  
-  // Transaction done
-  usbTxInProgress = 0;
+  if(usbTxInProgress) {
 
-  txCDCBytes(pdev);
+    uint32_t txLen = fifoSize(&usbTxFifo);
+    uint8_t *pBuf = cdcTxBuff;
+
+    if(txLen) {
+      
+      if(txLen > CDC_DATA_MAX_PACKET_SIZE) {
+        txLen = CDC_DATA_MAX_PACKET_SIZE;
+      }
+
+      usbTxInProgress = 1;
+
+      for(uint32_t x = 0; x < txLen; x++) {
+        *pBuf++ = fifoPop(&usbTxFifo);
+      }
+
+      /* Prepare the available data buffer to be sent on IN endpoint */
+      DCD_EP_Tx (pdev,
+                 CDC_IN_EP,
+                 (uint8_t*)cdcTxBuff,
+                 txLen);
+    } else {
+      // Transaction done
+      usbTxInProgress = 0;
+    }
+  }
     
   return USBD_OK;
 }
@@ -689,24 +686,46 @@ static uint8_t  usbd_cdc_DataOut (void *pdev, uint8_t epnum)
   * @param  epnum: endpoint number
   * @retval status
   */
-static uint8_t  usbd_cdc_SOF (void *pdev)
-{      
-  static uint32_t FrameCount = 0;
+// static uint8_t  usbd_cdc_SOF (void *pdev)
+// {      
+//   static uint32_t FrameCount = 0;
   
-  if (FrameCount++ == CDC_IN_FRAME_INTERVAL)
-  {
-    /* Reset the frame counter */
-    FrameCount = 0;
+//   if (FrameCount++ == CDC_IN_FRAME_INTERVAL)
+//   {
+//     /* Reset the frame counter */
+//     FrameCount = 0;
     
-    /* Check the data to be sent through IN pipe */
-    if(!usbTxInProgress) {
-      txCDCBytes(pdev);  
-    }
+//     /* Check the data to be sent through IN pipe */
+//     if(!usbTxInProgress) {
+//       uint32_t txLen = fifoSize(&usbTxFifo);
+//       uint8_t *pBuf = cdcTxBuff;
+
+//       if(txLen) {
+        
+//         if(txLen > CDC_DATA_MAX_PACKET_SIZE) {
+//           txLen = CDC_DATA_MAX_PACKET_SIZE;
+//         }
+
+//         usbTxInProgress = 1;
+
+//         for(uint32_t x = 0; x < txLen; x++) {
+//           *pBuf++ = fifoPop(&usbTxFifo);
+//         }
+
+//         /* Prepare the available data buffer to be sent on IN endpoint */
+//         DCD_EP_Tx (pdev,
+//                    CDC_IN_EP,
+//                    (uint8_t*)cdcTxBuff,
+//                    txLen);
+//       } else {
+//         usbTxInProgress = 0;
+//       } 
+//     }
     
-  }
+//   }
   
-  return USBD_OK;
-}
+//   return USBD_OK;
+// }
 
 /**
   * @brief  USBD_cdc_GetCfgDesc 
