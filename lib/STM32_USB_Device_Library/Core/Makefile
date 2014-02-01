@@ -28,8 +28,8 @@ endif
 CFLAGS += -ffreestanding -nostdlib
 
 # Includes
-CFLAGS += -Iinc -I../../../ -I../../cmsis/include -I../../cmsis/stm32f4xx -I../../STM32F4xx_StdPeriph_Driver/inc
-CFLAGS += -I../../Conf -I../../STM32_USB_OTG_Driver/inc
+CFLAGS += -Iinc -I$(BASEDIR) -I$(BASEDIR)/lib/cmsis/include -I$(BASEDIR)/lib/cmsis/stm32f4xx -I$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver/inc
+CFLAGS += -I$(BASEDIR)/lib/Conf -I$(BASEDIR)/lib/STM32_USB_OTG_Driver/inc
 
 # Default to STM32F40_41xxx if no device is passed
 ifeq ($(DEVICE_DEF), )
