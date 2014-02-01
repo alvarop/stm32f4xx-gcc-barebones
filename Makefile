@@ -63,22 +63,17 @@ vpath %.a lib
 
 
 # Includes
-INCLUDE_PATHS = -I$(BASEDIR)/inc -I$(BASEDIR)/lib/cmsis/stm32f4xx -I$(BASEDIR)/lib/cmsis/include -I$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver/inc
+INCLUDE_PATHS = -I$(BASEDIR)/inc -I$(BASEDIR)/lib/cmsis/stm32f4xx -I$(BASEDIR)/lib/cmsis/include
 INCLUDE_PATHS += -I$(BASEDIR)/lib/Conf
 
 # Library paths
-LIBPATHS = -Llib/STM32F4xx_StdPeriph_Driver
-#LIBPATHS += -Llib/USB_Device/Core -Llib/USB_Device/Class/cdc -Llib/USB_OTG
+LIBPATHS = -L$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver
 
 # Libraries to link
 LIBS = -lstdperiph 
-#LIBS += -lusbdevcore -lusbdevcdc -lusbcore
 
 # Extra includes
-INCLUDE_PATHS += -Ilib/STM32F4xx_StdPeriph_Driver/inc
-#INCLUDE_PATHS += -Ilib/USB_OTG/inc
-#INCLUDE_PATHS += -Ilib/USB_Device/Core/inc
-#INCLUDE_PATHS += -Ilib/USB_Device/Class/cdc/inc
+INCLUDE_PATHS += -I$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver/inc
 
 #CFLAGS += -Map $(OUTPATH)/$(PROJ_NAME).map
 
