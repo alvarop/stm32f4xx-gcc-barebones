@@ -35,10 +35,10 @@ CFLAGS += -I$(BASEDIR)/lib/Conf -I$(BASEDIR)/lib/STM32_USB_OTG_Driver/inc
 
 # Default to STM32F40_41xxx if no device is passed
 ifeq ($(DEVICE_DEF), )
-CFLAGS += -DSTM32F40_41xxx
-else
-CFLAGS += -D$(DEVICE_DEF)
+DEVICE_DEF = STM32F40_41xxx
 endif
+
+CFLAGS += -D$(DEVICE_DEF)
 
 # Sources
 SRCS = usb_core.c usb_dcd.c usb_dcd_int.c

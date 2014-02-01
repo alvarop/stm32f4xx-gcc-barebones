@@ -1,3 +1,5 @@
+BINPATH=
+
 CC=$(BINPATH)arm-none-eabi-gcc
 AR=$(BINPATH)arm-none-eabi-ar
 
@@ -6,8 +8,8 @@ AR=$(BINPATH)arm-none-eabi-ar
 # Check for valid float argument
 ifneq ($(FLOAT_TYPE), hard)
 ifneq ($(FLOAT_TYPE), soft)
-#override FLOAT_TYPE = hard
-override FLOAT_TYPE = soft
+override FLOAT_TYPE = hard
+#override FLOAT_TYPE = soft
 endif
 endif
 
@@ -29,7 +31,7 @@ CFLAGS += -ffreestanding -nostdlib
 
 # Includes
 CFLAGS += -Iinc -I$(BASEDIR) -I$(BASEDIR)/lib/cmsis/include -I$(BASEDIR)/lib/cmsis/stm32f4xx -I$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver/inc
-CFLAGS += -I$(BASEDIR)/lib/Conf -I$(BASEDIR)/lib/STM32_USB_OTG_Driver/inc
+CFLAGS += -I$(BASEDIR)/lib/STM32_USB_OTG_Driver/inc -I$(BASEDIR)/lib//STM32_USB_Device_Library/Core/inc
 
 # Default to STM32F40_41xxx if no device is passed
 ifeq ($(DEVICE_DEF), )
@@ -39,10 +41,10 @@ endif
 CFLAGS += -D$(DEVICE_DEF)
 
 # Sources
-SRCS = usbd_core.c usbd_ioreq.c usbd_req.c
+SRCS = usbd_cdc_core.c
 
 OBJS = $(SRCS:.c=.o)
-LIBNAME = libusbdevcore.a
+LIBNAME = libusbdevcdc.a
 
 all: $(LIBNAME)
 
