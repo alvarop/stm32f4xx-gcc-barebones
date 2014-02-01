@@ -1,10 +1,10 @@
 # Sources
 
-SRCS = main.c stm32f4xx_it.c system_stm32f4xx.c startup_stm32f4xx.c
+SRCS = main.c stm32f4xx_it.c system_stm32f4xx.c startup_stm32f4xx.c fifo.c
 S_SRCS = 
 
 # USB
-SRCS += usbd_usr.c usbd_cdc_vcp.c usbd_desc.c usb_bsp.c
+SRCS += usbd_usr.c usbd_cdc_vcp.c usbd_desc.c usb_bsp.c usbd_core.c
 
 # Project name
 
@@ -67,17 +67,16 @@ INCLUDE_PATHS = -I$(BASEDIR) -I$(BASEDIR)/lib/cmsis/stm32f4xx -I$(BASEDIR)/lib/c
 
 # Library paths
 LIBPATHS = -L$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver
-LIBPATHS += -L$(BASEDIR)/lib/STM32_USB_Device_Library/Core -L$(BASEDIR)/lib/STM32_USB_Device_Library/Class/cdc -L$(BASEDIR)/lib/STM32_USB_OTG_Driver
+LIBPATHS += -L$(BASEDIR)/lib/STM32_USB_Device_Library/Core -L$(BASEDIR)/lib/STM32_USB_OTG_Driver
 
 # Libraries to link
 LIBS = -lstdperiph -lc -lgcc -lnosys
-LIBS += -lusbdevcore -lusbdevcdc -lusbcore
+LIBS += -lusbdevcore -lusbcore
 
 # Extra includes
 INCLUDE_PATHS += -I$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver/inc
 INCLUDE_PATHS += -I$(BASEDIR)/lib/STM32_USB_OTG_Driver/inc
 INCLUDE_PATHS += -I$(BASEDIR)/lib/STM32_USB_Device_Library/Core/inc
-INCLUDE_PATHS += -I$(BASEDIR)/lib/STM32_USB_Device_Library/Class/cdc/inc
 
 #CFLAGS += -Map $(OUTPATH)/$(PROJ_NAME).map
 

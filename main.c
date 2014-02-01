@@ -4,7 +4,7 @@
 #include "stm32f4xx_conf.h"
 #include "stm32f4xx.h"
 
-#include "usbd_cdc_core.h"
+#include "usbd_core.h"
 #include "usbd_usr.h"
 #include "usbd_desc.h"
 #include "usbd_cdc_vcp.h"
@@ -25,7 +25,7 @@ int main(void) {
 		GPIO_ResetBits(GPIOD, GPIO_Pin_12);
 		Delay(500);
 
-		VCP_send_str("test\n");
+		printf("New Test!\n");
 	}
 
 	return 0;

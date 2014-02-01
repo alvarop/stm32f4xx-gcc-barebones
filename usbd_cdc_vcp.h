@@ -32,7 +32,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_conf.h"
 
-#include "usbd_cdc_core.h"
+#include "usbd_core.h"
 #include "usbd_conf.h"
 #include <stdint.h>
 
@@ -52,12 +52,6 @@ typedef struct
 /* Exported constants --------------------------------------------------------*/
 /* The following define is used to route the USART IRQ handler to be used.
    The IRQ handler function is implemented in the usbd_cdc_vcp.c file. */
-          
-void VCP_put_char(uint8_t buf);
-void VCP_send_str(uint8_t* buf);
-int VCP_get_char(uint8_t *buf);
-int VCP_get_string(uint8_t *buf);
-void VCP_send_buffer(uint8_t* buf, int len);
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */

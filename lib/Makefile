@@ -6,10 +6,8 @@ all:
 	$(MAKE) -C STM32F4xx_StdPeriph_Driver $(MAKEDEFS)
 	$(MAKE) -C STM32_USB_Device_Library/Core $(MAKEDEFS)
 	$(MAKE) -C STM32_USB_OTG_Driver $(MAKEDEFS)
-	$(MAKE) -C STM32_USB_Device_Library/Class/cdc $(MAKEDEFS)
 
 clean:
 	$(MAKE) clean -C STM32F4xx_StdPeriph_Driver
 	$(MAKE) clean -C STM32_USB_Device_Library/Core
 	$(MAKE) clean -C STM32_USB_OTG_Driver
-	$(MAKE) clean -C STM32_USB_Device_Library/Class/cdc
