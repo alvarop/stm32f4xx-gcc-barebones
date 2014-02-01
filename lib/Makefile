@@ -1,27 +1,9 @@
 # Build all libraries
 
-# Check for valid float argument
-ifneq ($(FLOAT_TYPE), hard)
-ifneq ($(FLOAT_TYPE), soft)
-#override FLOAT_TYPE = hard
-override FLOAT_TYPE = soft
-endif
-endif
+MAKEDEFS = FLOAT_TYPE=$(FLOAT_TYPE) BINPATH=$(BINPATH) DEVICE_DEF=$(DEVICE_DEF) BASEDIR=$(BASEDIR)
 
 all:
-	$(MAKE) -C STM32F4xx_StdPeriph_Driver FLOAT_TYPE=$(FLOAT_TYPE)
-#	$(MAKE) -C USB_OTG FLOAT_TYPE=$(FLOAT_TYPE)
-#	$(MAKE) -C USB_Device/Core FLOAT_TYPE=$(FLOAT_TYPE)
-#	$(MAKE) -C USB_Device/Class/cdc FLOAT_TYPE=$(FLOAT_TYPE)
-#	$(MAKE) -C USB_Host/Core FLOAT_TYPE=$(FLOAT_TYPE)
-#	$(MAKE) -C USB_Host/Class/MSC FLOAT_TYPE=$(FLOAT_TYPE)
-#	$(MAKE) -C fat_fs FLOAT_TYPE=$(FLOAT_TYPE)
-
+	$(MAKE) -C STM32F4xx_StdPeriph_Driver $(MAKEDEFS)
+	
 clean:
 	$(MAKE) clean -C STM32F4xx_StdPeriph_Driver
-#	$(MAKE) clean -C USB_OTG
-#	$(MAKE) clean -C USB_Device/Core
-#	$(MAKE) clean -C USB_Device/Class/cdc
-#	$(MAKE) clean -C USB_Host/Core
-#	$(MAKE) clean -C USB_Host/Class/MSC
-#	$(MAKE) clean -C fat_fs

@@ -3,8 +3,6 @@ BINPATH=
 CC=$(BINPATH)arm-none-eabi-gcc
 AR=$(BINPATH)arm-none-eabi-ar
 
-###################################################
-
 # Check for valid float argument
 ifneq ($(FLOAT_TYPE), hard)
 ifneq ($(FLOAT_TYPE), soft)
@@ -12,8 +10,6 @@ ifneq ($(FLOAT_TYPE), soft)
 override FLOAT_TYPE = soft
 endif
 endif
-
-###################################################
 
 vpath %.c src
 
@@ -30,14 +26,14 @@ endif
 CFLAGS += -ffreestanding -nostdlib
 
 # Includes
-CFLAGS += -Iinc -I../cmsis/include -I../cmsis/stm32f4xx
+CFLAGS += -Iinc -I$(BASEDIR)/lib/cmsis/include -I$(BASEDIR)/lib/cmsis/stm32f4xx
 
 # Default to STM32F40_41xxx if no device is passed
 ifeq ($(DEVICE_DEF), )
-CFLAGS += -DSTM32F40_41xxx
-else
-CFLAGS += -D$(DEVICE_DEF)
+DEVICE_DEF = STM32F40_41xxx
 endif
+
+CFLAGS += -D$(DEVICE_DEF)
 
 # Sources
 SRCS = misc.c stm32f4xx_dma.c stm32f4xx_rcc.c stm32f4xx_adc.c \

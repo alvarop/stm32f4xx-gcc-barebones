@@ -8,8 +8,12 @@ S_SRCS =
 
 # Project name
 
-PROJ_NAME=stm32f4xx-gcc-barebones
-OUTPATH=build
+PROJ_NAME = stm32f4xx-gcc-barebones
+OUTPATH = build
+
+OUTPATH := $(abspath $(OUTPATH))
+
+BASEDIR := $(abspath ./)
 
 ###################################################
 
@@ -26,7 +30,6 @@ endif
 
 ###################################################
 
-BINPATH=
 AS=$(BINPATH)arm-none-eabi-as
 CC=$(BINPATH)arm-none-eabi-gcc
 LD=$(BINPATH)arm-none-eabi-ld
@@ -50,20 +53,18 @@ endif
 
 # Default to STM32F40_41xxx if no device is passed
 ifeq ($(DEVICE_DEF), )
-CFLAGS += -DSTM32F40_41xxx
-else
-CFLAGS += -D$(DEVICE_DEF)
+DEVICE_DEF = STM32F40_41xxx
 endif
 
-###################################################
+CFLAGS += -D$(DEVICE_DEF)
 
 #vpath %.c src
 vpath %.a lib
 
 
 # Includes
-INCLUDE_PATHS = -Iinc -Ilib/cmsis/stm32f4xx -Ilib/cmsis/include -lib/STM32F4xx_StdPeriph_Driver/inc
-INCLUDE_PATHS += -Ilib/Conf
+INCLUDE_PATHS = -I$(BASEDIR)/inc -I$(BASEDIR)/lib/cmsis/stm32f4xx -I$(BASEDIR)/lib/cmsis/include -I$(BASEDIR)/lib/STM32F4xx_StdPeriph_Driver/inc
+INCLUDE_PATHS += -I$(BASEDIR)/lib/Conf
 
 # Library paths
 LIBPATHS = -Llib/STM32F4xx_StdPeriph_Driver
@@ -92,7 +93,7 @@ all: lib proj
 	$(SIZE) $(OUTPATH)/$(PROJ_NAME).elf
 
 lib:
-	$(MAKE) -C lib FLOAT_TYPE=$(FLOAT_TYPE)
+	$(MAKE) -C lib FLOAT_TYPE=$(FLOAT_TYPE) BINPATH=$(BINPATH) DEVICE_DEF=$(DEVICE_DEF) BASEDIR=$(BASEDIR)
 
 proj: $(OUTPATH)/$(PROJ_NAME).elf
 
@@ -115,5 +116,6 @@ clean:
 	rm -f $(OUTPATH)/$(PROJ_NAME).bin
 	rm -f $(OUTPATH)/$(PROJ_NAME).dis
 	rm -f $(OUTPATH)/$(PROJ_NAME).map
-	$(MAKE) clean -C lib # Remove this line if you don't want to clean the libs as well
+	# Remove this line if you don't want to clean the libs as well
+	$(MAKE) clean -C lib
 	
