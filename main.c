@@ -9,6 +9,8 @@
 #include "usbd_desc.h"
 #include "usbd_cdc_vcp.h"
 
+#include "console.h"
+
 #define BLINK_DELAY_MS	(500)
 
 volatile uint32_t tickMs = 0;
@@ -17,38 +19,6 @@ __ALIGN_BEGIN USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 // Private function prototypes
 void Delay(volatile uint32_t nCount);
 void init();
-
-static uint8_t cmdBuff[64];
-static uint8_t printBuff[1024];
-
-void console() {
-	uint32_t inBytes = fifoSize(&usbRxFifo);
-	if(inBytes > 0) {
-		uint32_t newLine = 0;
-		for(int32_t index = 0; index < inBytes; index++){
-			if((fifoPeek(&usbRxFifo, index) == '\n') || (fifoPeek(&usbRxFifo, index) == '\r')) {
-				newLine = index + 1;
-				break;
-			}
-		}
-
-		if(newLine > sizeof(cmdBuff)) {
-			newLine = sizeof(cmdBuff) - 1;
-		}
-
-		if(newLine) {
-			uint8_t *pBuf = cmdBuff;
-			while(newLine--){
-				*pBuf++ = fifoPop(&usbRxFifo);
-			}
-
-			*(pBuf - 1) = 0; // String terminator
-
-			snprintf(printBuff, sizeof(printBuff), "Command received: \"%s\"\n\r", cmdBuff);
-			puts(printBuff);
-		}
-	}
-}
 
 int main(void) {
 	uint32_t nextBlink;
@@ -61,6 +31,8 @@ int main(void) {
 	nextBlink = tickMs + BLINK_DELAY_MS;
 	for(;;) {
 
+		consoleProcess();
+
 		if(tickMs > nextBlink) {
 			nextBlink = tickMs + BLINK_DELAY_MS;
 			if(blinkState) {
@@ -70,8 +42,6 @@ int main(void) {
 			}
 			blinkState ^= 1;
 		}
-
-		console();
 
 		//__WFI(); //disable to work with openocd...
 		
