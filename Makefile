@@ -61,7 +61,6 @@ CFLAGS += -D$(DEVICE_DEF)
 #vpath %.c src
 vpath %.a lib
 
-
 # Includes
 INCLUDE_PATHS = -I$(BASEDIR) -I$(BASEDIR)/lib/cmsis/stm32f4xx -I$(BASEDIR)/lib/cmsis/include
 
