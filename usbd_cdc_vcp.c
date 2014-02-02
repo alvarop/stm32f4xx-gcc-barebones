@@ -33,6 +33,7 @@
 #include "usbd_cdc_vcp.h"
 #include "usb_conf.h"
 #include "fifo.h"
+#include <stdio.h>
 
 #define FIFO_BUFF_SIZE  (512)
 
@@ -158,29 +159,6 @@ static uint16_t VCP_Ctrl (uint32_t Cmd, uint8_t* Buf, uint32_t Len)
 }
 
 /**
- * @brief  putchar
- *         Sends one char over the USB serial link.
- * @param  buf: char to be sent
- * @retval none
- */
-
-char putchar(const char buf) {
-  VCP_DataTx(&buf, 1);
-
-  return buf;
-}
-
-int puts(const char* buf) {
-  uint32_t i = 0;
-  while (*(buf + i)) {
-    i++;
-  }
-  VCP_DataTx(buf, i);
-
-  return i;
-}
-
-/**
   * @brief  VCP_DataTx
   *         CDC received data to be send over USB IN endpoint are managed in 
   *         this function.
@@ -246,5 +224,37 @@ static uint16_t VCP_DataRx(uint8_t* Buf, uint32_t Len) {
 
   return USBD_OK;
 }
+
+//
+// Retarget read/write to use usb!
+// Found in share/gcc-arm-none-eabi/samples/src/retarget/retarget.c
+//
+int _write (int fd, char *ptr, int len)
+{
+  //
+  // If planning on supporting both serial and usb-serial, check fd here!
+  //
+  VCP_DataTx((uint8_t *)ptr, len);
+  return len;
+}
+
+int _read (int fd, char *ptr, int len)
+{
+  int readChars = 0;
+  
+  //
+  // If planning on supporting both serial and usb-serial, check fd here!
+  //
+  while(fifoSize(&usbRxFifo) && len--) {
+    *ptr++ = fifoPop(&usbRxFifo);
+  }
+  
+  return readChars;
+}
+
+void _ttywrch(int ch) {
+  VCP_DataTx((uint8_t *)&ch, 1);
+}
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
