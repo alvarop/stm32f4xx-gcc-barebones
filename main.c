@@ -9,7 +9,7 @@
 #include "usbd_desc.h"
 #include "usbd_cdc_vcp.h"
 
-#define BLINK_DELAY_MS	(1000)
+#define BLINK_DELAY_MS	(500)
 
 volatile uint32_t tickMs = 0;
 __ALIGN_BEGIN USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
@@ -23,6 +23,9 @@ int main(void) {
 	uint32_t blinkState = 0;
 	init();
 
+	// Disable line buffering on stdout
+	setbuf(stdout, NULL);
+
 	nextBlink = tickMs + BLINK_DELAY_MS;
 	for(;;) {
 
@@ -30,7 +33,7 @@ int main(void) {
 			nextBlink = tickMs + BLINK_DELAY_MS;
 			if(blinkState) {
 				GPIO_SetBits(GPIOD, GPIO_Pin_12);
-				puts("New Test!\n ");
+				printf("Clock tick: %ums\n", (unsigned int)tickMs);
 			} else {
 				GPIO_ResetBits(GPIOD, GPIO_Pin_12);
 			}
