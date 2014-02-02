@@ -6,6 +6,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "fifo.h"
+#include "stm32f4xx.h"
 
 //
 // Set up fifo struct (Buffer size must be a power of 2)
@@ -36,17 +37,23 @@ uint32_t fifoSize(fifo_t *fifo) {
 // Push character into fifo
 //
 uint8_t fifoPush(fifo_t *fifo, uint8_t byte) {
+	
+	uint8_t rval = 0;
+	
+	__disable_irq();
+	
 	fifo->buff[fifo->end++] = byte;
 	fifo->end &= fifo->sizeMask;
 
 	// If start==end, we've looped around and will start dropping characters
 	if(fifo->start == fifo->end) {
 		fifo->start = (fifo->start + 1) & fifo->sizeMask;
-
-		return -1;
+		rval = 1;
 	}
 
-	return 0;
+	__enable_irq();
+
+	return rval;
 }
 
 //
@@ -55,11 +62,15 @@ uint8_t fifoPush(fifo_t *fifo, uint8_t byte) {
 uint8_t fifoPop(fifo_t *fifo) {
 	uint8_t byte = 0;
 
+	__disable_irq();
+
 	// Make sure the fifo is not empty
 	if(fifo->start != fifo->end) {
 		byte = fifo->buff[fifo->start++];
 		fifo->start &= fifo->sizeMask;
 	}
+
+	__enable_irq();
 
 	return byte;
 }
