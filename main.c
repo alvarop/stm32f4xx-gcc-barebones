@@ -43,7 +43,7 @@ int main(void) {
 			blinkState ^= 1;
 		}
 
-		//__WFI(); //disable to work with openocd...
+		__WFI();
 		
 	}
 
